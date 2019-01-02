@@ -2,48 +2,29 @@
 Input validation with built in multi language functionality.
 
 # Basic Example
-`
-/*
- * BASIC EXAMPLE
- */
+`$validation = new Validate;`
+`$validation->setName('username')->setValue('My Awesome Username!')->notEmpty()->noWhiteSpace()->alpha()->length(2, 20);`
+`$validation->validate();`
 
-$validation = new Validate;
-
-$validation->setName('username')->setValue('My Awesome Username!')->notEmpty()->noWhiteSpace()->alpha()->length(2, 20);
-
-$validation->validate();
+`if($validation->failed()) {`
+  `echo $validation->getFirstError();`
+`}`
 
 
-if($validation->failed()) {
-
-  echo $validation->getFirstError();
-  
-}
-
-
-
-`
 # Get Errors
 
 Method No. 1
-``$validation->getErrors();``
+`$validation->getErrors();`
 
 Method No. 2
 
-``
-
-/*
- * Error getting, method No.2
-` */
-
-$validation->getErrors(function($errors) {
-  // Do whatever you want here. Loop, get last one, maybe get the second one even?
-  // In this case, we'll just get all errors for 'username'
+`validation->getErrors(function($errors) {`
+  `// Do whatever you want here. Loop, get last one, maybe get the second one even?`
+  `// In this case, we'll just get all errors for 'username'`
   
-  die(var_dump($errors['username']));
+  `die(var_dump($errors['username']));`
   
-});
-`
+`});`
 
 
 # Set custom localisation

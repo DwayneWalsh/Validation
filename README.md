@@ -3,23 +3,28 @@ Input validation with built in multi language functionality.
 
 # Basic Example
 `
+
+
 $validation = new Validate;
+
 $validation->setName('username')->setValue('My Awesome Username!')->notEmpty()->noWhiteSpace()->alpha()->length(2, 20);
+
 $validation->validate();
 
+
 if($validation->failed()) {
+
   echo $validation->getFirstError();
+  
 }
+
+
 
 `
 # Get All Errors
 
 Method No. 1
-`
-
-$validation->getErrors();
-
-`
+`$validation->getErrors();`
 
 Method No. 2
 `

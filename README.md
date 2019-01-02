@@ -4,9 +4,7 @@ Input validation with built in multi language functionality.
 # Basic Example
 `$validation = new Validate;`
 
-`$validation->setName('username')->setValue('My Awesome Username!')->notEmpty()->noWhiteSpace()->alpha()->length(2, 20);`
-
-`$validation->validate();`
+`$validation->setField('username')->setValue('My Awesome Username!')->notEmpty()->noWhiteSpace()->alpha()->length(2, 20);`
 
 `if($validation->failed()) {`
 
@@ -34,6 +32,8 @@ Method No. 2
 
 
 # Set custom localisation
+
+For more advanced example with localization, field names, and custom checks, view example.php
 
 `
 
@@ -65,6 +65,8 @@ Method No. 2
     $validation = new Validate($localisedResponses);
     ....
 `
+
+
 
 
 

@@ -3,7 +3,9 @@ Input validation with built in multi language functionality.
 
 # Basic Example
 `
-
+/*
+ * BASIC EXAMPLE
+ */
 
 $validation = new Validate;
 
@@ -21,13 +23,18 @@ if($validation->failed()) {
 
 
 `
-# Get All Errors
+# Get Errors
 
 Method No. 1
-`$validation->getErrors();`
+``$validation->getErrors();``
 
 Method No. 2
-`
+
+``
+
+/*
+ * Error getting, method No.2
+` */
 
 $validation->getErrors(function($errors) {
   // Do whatever you want here. Loop, get last one, maybe get the second one even?
@@ -38,7 +45,9 @@ $validation->getErrors(function($errors) {
 });
 `
 
+
 # Set custom localisation
+
 `
 
     // The array HAVE to exactly match the one in the class

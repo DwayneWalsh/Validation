@@ -15,5 +15,10 @@ return [
 	'uri'			=> "{{field}} must be an URI",
 	'bool'			=> "{{field}} must be a boolean (true-false)",
 	'email'			=> "{{field}} must be a valid email",
-	'equal'			=> "{{field}} must match {{field2}}"
+	'equal'			=> "{{field}} must match {{field2}}",
+
+	'custom' => [
+		'email_taken'	=> "{{field}} is already taken"
+	]
+	
 ];

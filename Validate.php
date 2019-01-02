@@ -1,22 +1,16 @@
 <?php
 
-/**
-  * Validate 
-  *
-  * Validation class with localisation possibility
-  *
-  * @author Dwayne Walsh
-  * @copyright (c) 2018, Dwayne Walsh
-  * @link https://github.com/DwayneWalsh
-  * @since 2019.01.02
-  */
-     
+namespace App\Validation;
+
 class Validate {
 
 	protected 	$numMin = 0,
-				      $numMax = 0,
-				      $lengthMin = 0,
-				      $lengthMax = 0;
+				$numMax = 0,
+				$lengthMin = 0,
+				$lengthMax = 0,
+				$equal = '',
+				$name = null,
+				$field = null;
 
 	public $patterns = array(
        'words'         => '[\p{L}\s]+',
@@ -39,7 +33,8 @@ class Validate {
 		'url'			=> "{{field}} must be an URL",
 		'uri'			=> "{{field}} must be an URI",
 		'bool'			=> "{{field}} must be a boolean (true-false)",
-		'email'			=> "{{field}} must be a valid email"
+		'email'			=> "{{field}} must be a valid email",
+		'equal'			=> "{{field2}} must match {{field}}"
 	);
 
 
@@ -66,7 +61,7 @@ class Validate {
 
 
 	/** 
-	 * Set field name
+	 * Set field name for display in messages
 	 *
 	 * @param string 	$name
 	 * @return this
@@ -74,6 +69,18 @@ class Validate {
 	public function setName($name)
 	{
 		$this->name = $name;
+		return $this;
+	}
+
+	/** 
+	 * Set field name
+	 *
+	 * @param string 	$name
+	 * @return this
+	 */
+	public function setField($name)
+	{
+		$this->field = $name;
 		return $this;
 	}
 
@@ -89,6 +96,7 @@ class Validate {
 		return $this;
 	}
 
+
 	/** 
 	 * Not Empty
 	 *
@@ -97,7 +105,7 @@ class Validate {
 	public function notEmpty()
 	{
 		if(empty($this->value)) {
-			$this->errors[$this->name][] = $this->responses['empty'];
+			$this->addError($this->responses['empty']);
 		}
 		return $this;
 	}
@@ -110,11 +118,28 @@ class Validate {
 	public function noWhiteSpace()
 	{
 		if(preg_match('/\s/',$this->value)) {
-			$this->errors[$this->name][] = $this->responses['whiteSpace'];
+			$this->addError($this->responses['whiteSpace']);
 		}
 		return $this;
 	}
 
+
+	/** 
+	 * Equal
+	 * Checks if two values match
+	 *
+	 * @param mixed 	$value
+	 * @return this
+	 */
+	public function equal($name, $value, $customName = null)
+	{
+		$this->equal = $customName ? $customName : $name;
+		if($this->value != $value) {
+			$this->addError($this->responses['equal']);
+		}
+
+		return $this;
+	}
 
 	/** 
 	 * Length
@@ -130,7 +155,7 @@ class Validate {
 		$this->lengthMax = $max;
 
 		if(strlen($this->value) < $this->lengthMin || strlen($this->value) > $this->lengthMax) {
-			$this->errors[$this->name][] = $this->responses['length'];
+			$this->addError($this->responses['length']);
 		}
 
 		return $this;
@@ -150,7 +175,7 @@ class Validate {
 		$this->numMax = $max;
 
 		if($this->value < $this->numMin || $this->value > $this->numMax) {
-			$this->errors[$this->name][] = $this->responses['minMax'];
+			$this->addError($this->responses['minMax']);
 		}
 
 		return $this;
@@ -159,7 +184,7 @@ class Validate {
 	public function int()
 	{
 		if(!filter_var($this->value, FILTER_VALIDATE_INT)) {
-			$this->errors[$this->name][] = $this->responses['int'];
+			$this->addError($this->responses['int']);
 		}
 		return $this;
 	}
@@ -167,7 +192,7 @@ class Validate {
 	public function float()
 	{
 		if(!filter_var($this->value, FILTER_VALIDATE_FLOAT)) {
-			$this->errors[$this->name][] = $this->responses['float'];
+			$this->addError($this->responses['float']);
 		}
 
 		return $this;
@@ -176,7 +201,7 @@ class Validate {
 	public function alpha()
 	{
 		if(!filter_var($this->value, FILTER_VALIDATE_REGEXP, array('options' => array('regexp' => "/^[a-zA-Z]+$/")))) {
-			$this->errors[$this->name][] = $this->responses['alpha'];
+			$this->addError($this->responses['alpha']);
 		}
 
 		return $this;
@@ -185,7 +210,7 @@ class Validate {
 	public function alphanum()
 	{
 		if(!filter_var($this->value, FILTER_VALIDATE_REGEXP, array('options' => array('regexp' => "/^[a-zA-Z0-9]+$/")))) {
-			$this->errors[$this->name][] = $this->responses['alphanum'];
+			$this->addError($this->responses['alphanum']);
 		}
 
 		return $this;
@@ -194,7 +219,7 @@ class Validate {
 	public function url()
 	{
 		if(!filter_var($this->value, FILTER_VALIDATE_REGEXP, array('options' => array('regexp' => "/^[a-zA-Z0-9]+$/")))) {
-			$this->errors[$this->name][] = $this->responses['url'];
+			$this->addError($this->responses['url']);
 		}
 		return $this;
 	}
@@ -202,7 +227,7 @@ class Validate {
 	public function uri()
 	{
 		if(!filter_var($this->value, FILTER_VALIDATE_REGEXP, array('options' => array('regexp' => "/^[A-Za-z0-9-\/_]+$/")))) {
-			$this->errors[$this->name][] = $this->responses['uri'];
+			$this->addError($this->responses['uri']);
 		}
 		return $this;
 	}
@@ -210,7 +235,7 @@ class Validate {
 	public function bool()
 	{
 		if(!filter_var($this->value, FILTER_VALIDATE_BOOLEAN)) {
-			$this->errors[$this->name][] = $this->responses['uri'];
+			$this->addError($this->responses['bool']);
 		}
 		return $this;
 	}
@@ -218,10 +243,11 @@ class Validate {
 	public function email()
 	{
 		if(!filter_var($this->value, FILTER_VALIDATE_EMAIL)) {
-			$this->errors[$this->name][] = $this->responses['email'];
+			$this->addError($this->responses['email']);
 		}
 		return $this;
 	}
+
 
 
 
@@ -236,13 +262,13 @@ class Validate {
 		if($name == 'array') {
                 
 			if(!is_array($this->value)){
-				$this->errors[$this->name][] = $this->responses['array'];
+				$this->addError($this->responses['array']);
 			}
             
 		} else {
 			$regex = '/^('.$this->patterns[$name].')$/u';
 			if($this->value != '' && !preg_match($regex, $this->value)){
-				$this->errors[$this->name][] = $this->responses['badFormat'];
+				$this->addError($this->responses['badFormat']);
 			}
                 
 		}
@@ -270,42 +296,40 @@ class Validate {
 	}
 
 
-	public function validate()
+	public function addError($error)
 	{
-		$this->parseErrors();
-	}
+		/** Change ex. password_repeat to Password Repeat */
+		$name = $this->name;
 
-	private function parseErrors()
-	{
-		$array = array();
-
-		if(count($this->errors)) {
-			foreach ($this->errors as $key => $error) {
-				$error = str_replace("{{field}}", ucfirst($this->name), $error);
-				$error = str_replace("{{lenMin}}", $this->lengthMin, $error);
-				$error = str_replace("{{lenMax}}", $this->lengthMax, $error);
-				$error = str_replace("{{numMin}}", $this->numMin, $error);
-				$error = str_replace("{{numMax}}", $this->numMax, $error);
-
-				$array[$key] = $error;
-			}
+		if(!$name) {
+			$name 		= str_replace('_', ' ', $this->field);
+			$name  		= str_replace('-', ' ', $name);
+			$name  		= ucwords($name);
 		}
-		$this->errors = [];
-		$this->errors = $array;
-		$this->parsed = true;
+
+
+		$error = str_replace("{{field}}",  $name, $error);
+		$error = str_replace("{{lenMin}}", $this->lengthMin, $error);
+		$error = str_replace("{{lenMax}}", $this->lengthMax, $error);
+		$error = str_replace("{{numMin}}", $this->numMin, $error);
+		$error = str_replace("{{numMax}}", $this->numMax, $error);
+		$error = str_replace("{{field2}}", $this->equal, $error);
+		$this->errors[$this->field][] = $error;
 	}
 
 	public function getErrors($callback = null)
 	{
-		if(!$this->parsed) {
-			$this->parseErrors();
-		}
-
 		if(!$callback) {
 			return $this->errors;
 		}
 
 		return call_user_func($callback, $this->errors);
+	}
+
+
+	public function custom($callback)
+	{
+		return call_user_func($callback, $this);
 	}
 
 

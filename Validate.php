@@ -1,7 +1,16 @@
 <?php
 
-namespace App\Validation;
-
+/**
+  * Validate 
+  *
+  * Validation class with localisation possibility
+  *
+  * @author Dwayne Walsh
+  * @copyright (c) 2018, Dwayne Walsh
+  * @link https://github.com/DwayneWalsh
+  * @since 2019.01.02
+  */
+     
 class Validate {
 
 	protected 	$numMin = 0,
